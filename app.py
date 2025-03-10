@@ -1,39 +1,32 @@
-
 import streamlit as st
 import matplotlib.pyplot as plt
 
 # --- Streamlit Page Configuration ---
-st.set_page_config(page_title="Graphical Unit Converter", page_icon="📏", layout="wide")
+st.set_page_config(page_title="Graphical Unit Converter", page_icon="📏", layout="centered")
 
 # --- Custom Styling ---
 st.markdown("""
     <style>
-        /* Background Color */
-        body {
-            background-color: #121212;
-        }
-
         /* Title Styling */
         .title {
-            color: #ffffff;
+            color: #FF5733;
             text-align: center;
-            font-size: 60px;
+            font-size: 40px;
             font-weight: bold;
+            font-family: 'Arial', sans-serif;
+            text-decoration: underline;
         }
-
         /* Sidebar Styling */
         .sidebar .sidebar-content {
             background-color: #1E1E1E !important;
             color: white;
         }
-
         /* Labels */
         label {
             font-weight: bold;
             font-size: 16px;
-            color: ##EFC4C4 !important;
+            color: #EFC4C4 !important;
         }
-
         /* Result Box */
         .result-box {
             background-color: #1E88E5;
@@ -44,13 +37,12 @@ st.markdown("""
             font-size: 20px;
             color: #ffffff;
         }
-
         /* Footer */
         .footer {
             text-align: center;
             font-size: 14px;
             margin-top: 20px;
-            color: #D49DA4C;
+            color: #D49DA4;
         }
     </style>
 """, unsafe_allow_html=True)
@@ -85,22 +77,7 @@ def convert_time(value, from_unit, to_unit):
     return value * (time_units[to_unit] / time_units[from_unit])
 
 # --- UI Header ---
-#1 st.markdown('<p class="title">⚡ GRAPHICAL UNIT CONVERTER</p>', unsafe_allow_html=True)
-
-
-st.markdown("""
-    <style>
-        .title {
-            color: #FF5733;  /* Change to desired color (this is a purple shade) */
-            text-align: wide;
-            font-size: 30px !important;  /* Increased font size */
-            font-weight: bold; /* Makes the font bold */
-            font-family: 'Arial', sans-serif; /* Change to desired font family */
-            text-decoration: underline; /* Underline */
-        }
-    </style>
-    <p class="title">⚡ GRAPHICAL UNIT CONVERTER</p>
-""", unsafe_allow_html=True)
+st.markdown('<p class="title">⚡ GRAPHICAL UNIT CONVERTER</p>', unsafe_allow_html=True)
 
 st.write("Convert **Temperature 🌡️, Length 📏, Weight ⚖️, Distance 🚀, Speed 🏎️, and Time ⏳** effortlessly!")
 
@@ -112,48 +89,37 @@ col1, col2 = st.columns(2)
 
 with col1:
     from_unit, to_unit = None, None
-    if category == "🌡️ Temperature":
-        from_unit = st.selectbox("🌡️ Convert from:", ["Celsius", "Fahrenheit", "Kelvin"])
-        to_unit = st.selectbox("🌡️ Convert to:", ["Celsius", "Fahrenheit", "Kelvin"])
-    elif category == "📏 Length":
-        from_unit = st.selectbox("📏 Convert from:", ["Meters", "Kilometers", "Miles", "Inches"])
-        to_unit = st.selectbox("📏 Convert to:", ["Meters", "Kilometers", "Miles", "Inches"])
-    elif category == "⚖️ Weight":
-        from_unit = st.selectbox("⚖️ Convert from:", ["Grams", "Kilograms", "Pounds", "Ounces"])
-        to_unit = st.selectbox("⚖️ Convert to:", ["Grams", "Kilograms", "Pounds", "Ounces"])
-    elif category == "🚀 Distance":
-        from_unit = st.selectbox("🚀 Convert from:", ["Meters", "Kilometers", "Miles", "Yards"])
-        to_unit = st.selectbox("🚀 Convert to:", ["Meters", "Kilometers", "Miles", "Yards"])
-    elif category == "🏎️ Speed":
-        from_unit = st.selectbox("🏎️ Convert from:", ["m/s", "km/h", "mph"])
-        to_unit = st.selectbox("🏎️ Convert to:", ["m/s", "km/h", "mph"])
-    elif category == "⏳ Time":
-        from_unit = st.selectbox("⏳ Convert from:", ["Seconds", "Minutes", "Hours"])
-        to_unit = st.selectbox("⏳ Convert to:", ["Seconds", "Minutes", "Hours"])
-
+    units = {
+        "🌡️ Temperature": ["Celsius", "Fahrenheit", "Kelvin"],
+        "📏 Length": ["Meters", "Kilometers", "Miles", "Inches"],
+        "⚖️ Weight": ["Grams", "Kilograms", "Pounds", "Ounces"],
+        "🚀 Distance": ["Meters", "Kilometers", "Miles", "Yards"],
+        "🏎️ Speed": ["m/s", "km/h", "mph"],
+        "⏳ Time": ["Seconds", "Minutes", "Hours"]
+    }
+    
+    from_unit = st.selectbox(f"{category} Convert from:", units[category])
+    to_unit = st.selectbox(f"{category} Convert to:", units[category])
     value = st.number_input("🔢 Enter Value:", min_value=0.0, format="%.2f")
 
 # --- Conversion Logic ---
 result = None
 if from_unit and to_unit:
-    if category == "🌡️ Temperature":
-        result = convert_temperature(value, from_unit, to_unit)
-    elif category == "📏 Length":
-        result = convert_length(value, from_unit, to_unit)
-    elif category == "⚖️ Weight":
-        result = convert_weight(value, from_unit, to_unit)
-    elif category == "🚀 Distance":
-        result = convert_distance(value, from_unit, to_unit)
-    elif category == "🏎️ Speed":
-        result = convert_speed(value, from_unit, to_unit)
-    elif category == "⏳ Time":
-        result = convert_time(value, from_unit, to_unit)
+    conversion_functions = {
+        "🌡️ Temperature": convert_temperature,
+        "📏 Length": convert_length,
+        "⚖️ Weight": convert_weight,
+        "🚀 Distance": convert_distance,
+        "🏎️ Speed": convert_speed,
+        "⏳ Time": convert_time
+    }
+    result = conversion_functions[category](value, from_unit, to_unit)
 
 # --- Display Result and Graph ---
 with col2:
     if st.button("🔄 Convert"):
         st.markdown(f'<p class="result-box">✅ {value} {from_unit} = <strong>{result:.2f} {to_unit}</strong></p>', unsafe_allow_html=True)
-
+        
         # --- Graphical Representation ---
         fig, ax = plt.subplots()
         ax.bar([from_unit, to_unit], [value, result], color=['#1E88E5', '#E53935'])
@@ -162,4 +128,4 @@ with col2:
         st.pyplot(fig)
 
 # --- Footer ---
-st.markdown('<p class="footer">🚀 Developed by <b>"Noor Ul Ain"</b> using Python & Streamlit</p>', unsafe_allow_html=True)
+st.markdown('<p class="footer">🚀 Developed by <b>Noor Ul Ain</b> using Python & Streamlit</p>', unsafe_allow_html=True)
